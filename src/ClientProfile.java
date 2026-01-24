@@ -6,7 +6,8 @@ private double maxBudgetUSD;
 private int minSeats;
 private int minRangeNm;
 
-    private Map< Spec, Integer> rank = new EnumMap<>(Spec.class);
+
+    private Map< Spec, Integer> ranks = new EnumMap<>(Spec.class);
 
     public ClientProfile(double maxBudgetUSD, int minSeats, int minRangeNm) throws IllegalArgumentException {
 
@@ -19,30 +20,24 @@ private int minRangeNm;
 
 
     }
-    public void setRank(Spec spec, int r) {
-        if (r <= 0) {
-            throw new IllegalArgumentException(
-                    "Rank must be >= 1 (1 = most important)"
-            );
-        }
+    public void setRanks(Spec spec, int r) {
+        if (r< 1 || r > 5)
+            throw new IllegalArgumentException("Rank must be 1–5");
 
-        // Check if this rank is already used by another spec
-        for (Map.Entry<Spec, Integer> entry : rank.entrySet()) {
-            if (entry.getValue() == r && entry.getKey() != spec) {
-                throw new IllegalArgumentException(
-                        "Rank " + r + " is already assigned to " + entry.getKey()
-                );
-            }
-        }
+        if (ranks.containsValue(r))
+            throw new IllegalArgumentException("Duplicate rank not allowed");
 
-        rank.put(spec, r);
+        ranks.put(spec,r);
+    } public Map<Spec, Integer> getRanks() {
+        return ranks;
+    } public boolean IsCompleteRank() {
+        if (ranks.isEmpty()) {
+            return false;
+        } else {
+            return ranks.size() == Spec.values().length;
+        }
     }
-    public String ValidateRanks() {
-        int numSpecs = Spec.values().length;
-        if(rank.size() != numSpecs) {
-            return "You must rank all " + numSpecs + " specs. Currently ranked: " + rank.size();
-        }
+
 
     }
 
-}
