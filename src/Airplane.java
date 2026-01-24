@@ -63,5 +63,5 @@ public class Airplane implements Serializable {
                 && this.purchasePriceUSD == other.purchasePriceUSD
                 && this.hourlyOperatingCostUSD == other.hourlyOperatingCostUSD
                 && this.model.equals(other.model);
-    }
+    }//
 }
