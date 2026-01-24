@@ -37,6 +37,18 @@ public class Airplane implements Serializable {
     public double getHourlyOperatingCostUSD() { return hourlyOperatingCostUSD; }
     public void setHourlyOperatingCostUSD(double hourlyOperatingCostUSD) { this.hourlyOperatingCostUSD = hourlyOperatingCostUSD; }
 
+    // String representation
+    @Override
+   public String toString(){
+        return "-----------------------------------------------\n"
+                + "Model : " + model + "\n"
+                + "Seats : " + seats + "\n"
+                + "Range (N.M.): " + rangeNm + "\n"
+                + "Cruise Speed Mach : " + cruiseSpeedMach + "\n"
+                + "Purchase Price (USD) : " + purchasePriceUSD + "\n"
+                + "Hourly Operating Cost (USD) : " + hourlyOperatingCostUSD + "\n";
+    }
+
     // Equals method
     @Override
     public boolean equals(Object obj) {
@@ -53,4 +65,3 @@ public class Airplane implements Serializable {
                 && this.model.equals(other.model);
     }
 }
-
