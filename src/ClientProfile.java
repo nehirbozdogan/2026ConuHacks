@@ -19,8 +19,30 @@ private int minRangeNm;
 
 
     }
-    public void  setRank(Spec spec, int rank) {
-        if (rank <= 0) throw new IllegalArgumentException("Invalid rank");
+    public void setRank(Spec spec, int r) {
+        if (r <= 0) {
+            throw new IllegalArgumentException(
+                    "Rank must be >= 1 (1 = most important)"
+            );
+        }
+
+        // Check if this rank is already used by another spec
+        for (Map.Entry<Spec, Integer> entry : rank.entrySet()) {
+            if (entry.getValue() == r && entry.getKey() != spec) {
+                throw new IllegalArgumentException(
+                        "Rank " + r + " is already assigned to " + entry.getKey()
+                );
+            }
+        }
+
+        rank.put(spec, r);
+    }
+    public String ValidateRanks() {
+        int numSpecs = Spec.values().length;
+        if(rank.size() != numSpecs) {
+            return "You must rank all " + numSpecs + " specs. Currently ranked: " + rank.size();
+        }
+
     }
 
 }
