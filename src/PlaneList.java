@@ -9,20 +9,20 @@ import java.util.NoSuchElementException;
             this.head = head;
         }
 
-        public PlaneList() {
+        public PlaneList() {// constructor
             this.size = 0;
             this.head = null;
         }
 
-        public PlaneList(PlaneList p) {
+        public PlaneList(PlaneList p) {// copy constructor
             if (p == null || p.head == null) {
                 head = null;
                 size = 0;
                 return;
             } else {
 
-                PlaneNode t1 = p.head; // t1 traverses the source list
-                // Create the first node (head) of the new list
+                PlaneNode t1 = p.head;
+
                 this.head = new PlaneNode(
                         new Airplane(
                                 t1.plane.getModel(),
@@ -35,9 +35,9 @@ import java.util.NoSuchElementException;
                         null
                 );
                 t1 = t1.next;
-                PlaneNode t2 = head; // t2 traverses the new list as we build it
+                PlaneNode t2 = head;
 
-                // Copy the remaining nodes
+
                 while (t1 != null) {
 
                     t2.next = new PlaneNode(new Airplane(
@@ -60,19 +60,19 @@ import java.util.NoSuchElementException;
 
         }
 
-        public PlaneList clone() {
+        public PlaneList clone() { // clone method
             return new PlaneList(this);
         }
 
-        public void AddToStart(Airplane object) {
-            // Create a new node whose next is the current head, then update head
+        public void AddToStart(Airplane object) {//addtostart method
+
             this.head = new PlaneNode(object, head);
             size++;
         }
 
-        public boolean insertAtIndex(Airplane obj, int index) {
+        public boolean insertAtIndex(Airplane obj, int index) {// insertatindex method
 
-            if (index < 0 || index > size) { // Check for invalid index
+            if (index < 0 || index > size) {
 
                 try {
                     throw new NoSuchElementException();
@@ -82,25 +82,25 @@ import java.util.NoSuchElementException;
                 return false;
 
 
-            } else if (head == null) {  // Empty list case
-                if (index == 0) { //inserting at the head of an empty list
+            } else if (head == null) {
+                if (index == 0) {
                     this.AddToStart(obj);
                     return true;
                 } else {
                     return false;
                 }
             }
-            if (index == 0) { // Inserting at the head of a non-empty list
+            if (index == 0) {
                 this.AddToStart(obj);
                 return true;
-            }  // Traverse to the node just before the desired index
+            }
             PlaneNode t = head;
             int i = 0;
             while (t.next != null && i < index - 1) {
                 i++;
                 t = t.next;
             }
-            if (t.next == null || i >= index - 1) {  // Insert new node after t
+            if (t.next == null || i >= index - 1) {
                 t.next = new PlaneNode(obj, t.next);
                 size++;
                 return true;
@@ -109,8 +109,8 @@ import java.util.NoSuchElementException;
             }
         }
 
-        public boolean deleteFromIndex(int index) {
-            if (index < 0 || index >= size) { // Check for invalid index
+        public boolean deleteFromIndex(int index) { //deletefromindex
+            if (index < 0 || index >= size) {
                 try {
                     throw new NoSuchElementException();
                 } catch (NoSuchElementException e) {
@@ -120,14 +120,14 @@ import java.util.NoSuchElementException;
                 return false;
 
             }
-            if (head == null) { // If the list is empty, nothing to delete
+            if (head == null) {
                 return false;
-            } else if (index == 0) {  // Deleting the head node
+            } else if (index == 0) {
                 head = head.next;
                 size--;
                 return true;
             } else {
-                // Traverse to the node just before the one to delete
+
                 int i = 0;
                 PlaneNode t = head;
                 while (i < index - 1 && t != null) {
@@ -137,7 +137,7 @@ import java.util.NoSuchElementException;
                 if (t == null) {
                     return false;
                 }
-                // If t.next is not null, bypass the node at index
+
                 if (i >= index - 1) {
                     if (t.next != null) {
                         t.next = t.next.next;
@@ -154,23 +154,23 @@ import java.util.NoSuchElementException;
 
         }
 
-        public boolean replaceAtIndex(Airplane c, int index) {
-            if (index < 0 || index >= size) { // Check for invalid index
+        public boolean replaceAtIndex(Airplane c, int index) {// replaceatindex method
+            if (index < 0 || index >= size) {
                 return false;
             }
-            if (head == null) { //check for empty list case
+            if (head == null) {
                 return false;
             }
             int i = 0;
             PlaneNode t = head;
-            while (t != null && i != index) { // Traverse to the node at the given index
+            while (t != null && i != index) {
                 i++;
                 t = t.next;
             }
-            if (t == null) { // If we ran out of nodes, index is invalid
+            if (t == null) {
                 return false;
             }
-            if (i == index) { // Replace the cellphone at that node
+            if (i == index) {
                 t.plane = c;
                 return true;
             } else {
@@ -178,7 +178,83 @@ import java.util.NoSuchElementException;
             }
 
 
+
+        } public PlaneNode find(Airplane airplane) {// find method
+            if (head == null) {
+                return null;
+            }	PlaneNode t = head;
+
+            while (t != null && !t.plane.equals(airplane)) {
+
+                t = t.next;
+
+            } return t;
         }
+
+        public boolean contains(Airplane airplane) { // contains method
+            if (this.find(airplane) == null) {
+                return false;
+            } else {
+                return true;
+            }
+        } public void showContents() { // showcontents method
+            if (head == null) {
+                System.out.println("head --> X");
+            } else {
+
+                PlaneNode t = head;
+                while (t != null) {
+
+                    System.out.print(t.plane + "--> ");
+                    t = t.next;
+
+                } System.out.print("X\n");
+
+            }
+        }
+
+        public boolean equals(Object o) {// equals method
+
+            if ( o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            PlaneList L1 = (PlaneList)o;
+
+            if (head == null && L1.head == null) {
+                return true;
+            } else if ((head == null && L1.head != null) || (head != null && L1.head == null)) {
+
+                return false;
+            }
+            PlaneNode t1 = head;
+            PlaneNode t2 = L1.head;
+            while (t1!= null && t2!=null) {
+                if (!t1.plane.equals(t2.plane)) {
+                    return false;
+                }
+                t1 = t1.next;
+                t2 = t2.next;
+            }
+            if (t1 == null && t2 == null) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } public void deleteFromStart() { // deletefromstart method
+
+            if (head == null) {
+                return;
+            } else {
+                head = head.next;
+                size--;
+                return;
+            }
+        }
+
+
+
+
 
         private class PlaneNode implements Cloneable {
             private Airplane plane;
