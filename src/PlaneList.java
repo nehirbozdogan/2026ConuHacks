@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
                         new Airplane(
                                 t1.plane.getModel(),
                                 t1.plane.getSeats(),
-                                t1.plane.getRangeNm(),
+                                t1.plane.getSizeCategory(),
                                 t1.plane.getCruiseSpeedMach(),
                                 t1.plane.getPurchasePriceUSD(),
                                 t1.plane.getHourlyOperatingCostUSD()
@@ -43,7 +43,7 @@ import java.util.NoSuchElementException;
                     t2.next = new PlaneNode(new Airplane(
                             t1.plane.getModel(),
                             t1.plane.getSeats(),
-                            t1.plane.getRangeNm(),
+                            t1.plane.getSizeCategory(),
                             t1.plane.getCruiseSpeedMach(),
                             t1.plane.getPurchasePriceUSD(),
                             t1.plane.getHourlyOperatingCostUSD()
@@ -250,13 +250,15 @@ import java.util.NoSuchElementException;
                 size--;
                 return;
             }
+        } public PlaneNode getHead() {
+            return head;
         }
 
 //
 
 
 
-        private class PlaneNode implements Cloneable {
+        public class PlaneNode implements Cloneable {
             private Airplane plane;
             private PlaneNode next;
 
@@ -271,7 +273,7 @@ import java.util.NoSuchElementException;
             }
 
             public PlaneNode(PlaneNode p) {
-                this(new Airplane(p.plane.getModel(), p.plane.getSeats(), p.plane.getRangeNm(),
+                this(new Airplane(p.plane.getModel(), p.plane.getSeats(), p.plane.getSizeCategory(),
                         p.plane.getCruiseSpeedMach(), p.plane.getPurchasePriceUSD(),
                         p.plane.getHourlyOperatingCostUSD()), p.next);
             }
