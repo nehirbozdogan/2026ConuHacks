@@ -1,5 +1,5 @@
 import java.io.Serializable;
-
+//
 class Airplane implements Serializable {
     private String model;
     private int seats;

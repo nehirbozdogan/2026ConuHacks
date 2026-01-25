@@ -135,7 +135,7 @@ class ScoredAirplane extends Airplane {
     public double getScore() {
         return score;
     }
-
+//
     public double getMatchPercentage() {
         return matchPercentage;
     }

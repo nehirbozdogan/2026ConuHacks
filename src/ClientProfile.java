@@ -56,7 +56,7 @@ class ClientProfile {
         if (cost < 0) throw new IllegalArgumentException("Cost cannot be negative");
         this.targetOperatingCostUSD = cost;
     }
-
+//
     public int getTargetSeats() { return targetSeats; }
     public String getTargetSizeCategory() { return targetSizeCategory; }
     public int getTargetCabinCompartment() { return targetCabinCompartment; }

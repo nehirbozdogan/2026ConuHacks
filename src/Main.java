@@ -25,7 +25,7 @@ public class Main {
                 26000000,                // target budget ($26M)
                 3100                     // target operating cost ($3100/hr)
         );
-
+//
         // Set rankings (1 = most important, 5 = least important)
         client.setRank(Spec.BUDGET, 1);           // Budget is MOST important
         client.setRank(Spec.SIZE_CATEGORY, 2);    // Size/Range is 2nd
