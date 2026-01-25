@@ -11,18 +11,18 @@ class ClientProfile {
 
     private int targetSeats;
     private String targetSizeCategory;
-    private double targetCruiseSpeedMach;
+    private int targetCabinCompartment;
     private double targetPurchasePriceUSD;
     private double targetOperatingCostUSD;
     private Map<Spec, Integer> ranks = new EnumMap<>(Spec.class);
 
-    public ClientProfile(int targetSeats, String targetSizeCategory, double targetCruiseSpeedMach,
+    public ClientProfile(int targetSeats, String targetSizeCategory, int targetCabinCompartment,
                          double targetPurchasePriceUSD, double targetOperatingCostUSD) {
-        this.targetSeats = targetSeats;
-        this.targetSizeCategory = targetSizeCategory;
-        this.targetCruiseSpeedMach = targetCruiseSpeedMach;
-        this.targetPurchasePriceUSD = targetPurchasePriceUSD;
-        this.targetOperatingCostUSD = targetOperatingCostUSD;
+        setTargetSeats(targetSeats);
+        setTargetSizeCategory(targetSizeCategory);
+        setTargetCabinCompartment(targetCabinCompartment);
+        setTargetPurchasePriceUSD(targetPurchasePriceUSD);
+        setTargetOperatingCostUSD(targetOperatingCostUSD);
     }
 
     public void setTargetSeats(int seats) {
@@ -42,9 +42,9 @@ class ClientProfile {
         this.targetSizeCategory = category;
     }
 
-    public void setTargetCruiseSpeedMach(double mach) {
-        if (mach < 0) throw new IllegalArgumentException("Speed cannot be negative");
-        this.targetCruiseSpeedMach = mach;
+    public void setTargetCabinCompartment(int cc) {
+        if (cc < 0) throw new IllegalArgumentException("Compartment cannot be negative");
+        this.targetCabinCompartment = cc;
     }
 
     public void setTargetPurchasePriceUSD(double price) {
@@ -59,12 +59,14 @@ class ClientProfile {
 
     public int getTargetSeats() { return targetSeats; }
     public String getTargetSizeCategory() { return targetSizeCategory; }
-    public double getTargetCruiseSpeedMach() { return targetCruiseSpeedMach; }
+    public int getTargetCabinCompartment() { return targetCabinCompartment; }
     public double getTargetPurchasePriceUSD() { return targetPurchasePriceUSD; }
     public double getTargetOperatingCostUSD() { return targetOperatingCostUSD; }
 
     public void setRank(Spec spec, int r) {
-        if (r < 1 || r > 5)
+        if (spec == null) {
+            throw new IllegalArgumentException("Spec cannot be null");
+        } if (r < 1 || r > 5)
             throw new IllegalArgumentException("Rank must be 1-5");
         if (ranks.containsValue(r))
             throw new IllegalArgumentException("Duplicate rank not allowed");
@@ -72,7 +74,7 @@ class ClientProfile {
     }
 
     public Map<Spec, Integer> getRanks() {
-        return ranks;
+        return new EnumMap<>(ranks);
     }
 
     public boolean isCompleteRank() {
@@ -82,7 +84,7 @@ class ClientProfile {
     public double getTargetValue(Spec spec) {
         switch (spec) {
             case SEATS: return targetSeats;
-            case SPEED: return targetCruiseSpeedMach;
+            case CABIN_COMPARTMENT: return targetCabinCompartment;
             case BUDGET: return targetPurchasePriceUSD;
             case OP_COST: return targetOperatingCostUSD;
             default: return 0;
@@ -90,6 +92,6 @@ class ClientProfile {
     }
 
     public static String[] getSizeCategories() {
-        return SIZE_CATEGORIES;
+        return SIZE_CATEGORIES.clone();
     }
 }

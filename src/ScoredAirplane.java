@@ -1,25 +1,34 @@
+import java.util.Map;
+import java.util.EnumMap;
+
 class ScoredAirplane extends Airplane {
     private double score;
+    private double matchPercentage;
+    private Map<Spec, Double> individualMatches = new EnumMap<>(Spec.class);
 
     public ScoredAirplane(Airplane airplane, ClientProfile profile) {
         super(airplane.getModel(),
                 airplane.getSeats(),
                 airplane.getSizeCategory(),
-                airplane.getCruiseSpeedMach(),
+                airplane.getCabinCompartment(),
                 airplane.getPurchasePriceUSD(),
                 airplane.getHourlyOperatingCostUSD());
-        this.score = calculateScore(profile);
+        this.matchPercentage = calculateMatchPercentage(profile);
+        this.score = 100.0 - matchPercentage; // Lower score is still better for sorting
     }
-//
-    private double calculateScore(ClientProfile profile) {
-        double totalScore = 0.0;
+
+    private double calculateMatchPercentage(ClientProfile profile) {
+        double totalWeightedMatch = 0.0;
+        double totalWeight = 0.0;
 
         for (Spec spec : Spec.values()) {
             int rank = profile.getRanks().get(spec);
-            double deviation;
+            double weight = (6 - rank); // Rank 1 = weight 5, Rank 5 = weight 1
+
+            double matchScore; // 0-100, where 100 is perfect match
 
             if (spec == Spec.SIZE_CATEGORY) {
-                deviation = calculateCategoryDeviation(
+                matchScore = calculateCategoryMatch(
                         this.getSizeCategory(),
                         profile.getTargetSizeCategory(),
                         rank
@@ -27,42 +36,80 @@ class ScoredAirplane extends Airplane {
             } else {
                 double actualValue = getActualValue(spec);
                 double targetValue = profile.getTargetValue(spec);
-                deviation = calculateNumericDeviation(actualValue, targetValue, rank);
+                matchScore = calculateNumericMatch(actualValue, targetValue, rank);
             }
 
-            totalScore += deviation;
+            individualMatches.put(spec, matchScore);
+            totalWeightedMatch += matchScore * weight;
+            totalWeight += weight;
         }
 
-        return totalScore;
+        // Return weighted average match percentage
+        return totalWeight > 0 ? totalWeightedMatch / totalWeight : 0.0;
     }
 
-    private double calculateCategoryDeviation(String actualCategory, String targetCategory, int rank) {
+    private double calculateCategoryMatch(String actualCategory, String targetCategory, int rank) {
         int actualIndex = getCategoryIndex(actualCategory);
         int targetIndex = getCategoryIndex(targetCategory);
         int steps = Math.abs(actualIndex - targetIndex);
 
-        if (steps == 0) return 0.0;
+        // Exact match = 100%
+        if (steps == 0) return 100.0;
 
-        double basePenalty;
+        // Calculate match percentage based on distance and rank
+        // Rank 1 (strict): each step away reduces match significantly
+        // Rank 5 (loose): each step away reduces match slightly
+        double maxSteps = 3.0; // Maximum possible steps in our 4-category system
+        double stepPenalty;
+
         switch (rank) {
-            case 1: basePenalty = 15.0; break;
-            case 2: basePenalty = 10.0; break;
-            case 3: basePenalty = 6.0; break;
-            case 4: basePenalty = 3.0; break;
-            case 5: basePenalty = 1.0; break;
-            default: basePenalty = 5.0;
+            case 1: stepPenalty = 40.0; break; // -40% per step (very strict)
+            case 2: stepPenalty = 30.0; break; // -30% per step
+            case 3: stepPenalty = 20.0; break; // -20% per step
+            case 4: stepPenalty = 15.0; break; // -15% per step
+            case 5: stepPenalty = 10.0; break; // -10% per step (very loose)
+            default: stepPenalty = 25.0;
         }
 
-        return basePenalty * steps;
+        double match = 100.0 - (steps * stepPenalty);
+        return Math.max(0.0, match); // Don't go below 0%
     }
 
-    private double calculateNumericDeviation(double actual, double target, int rank) {
-        if (target == 0) return 0.0;
+    private double calculateNumericMatch(double actual, double target, int rank) {
+        if (target == 0) return 100.0; // Avoid division by zero
 
         double percentDeviation = Math.abs(actual - target) / target;
-        double weight = (6 - rank);
 
-        return percentDeviation * weight * 100;
+        // Define tolerance levels based on rank
+        double tolerance;
+        switch (rank) {
+            case 1: tolerance = 0.05; break;  // 5% tolerance (very strict)
+            case 2: tolerance = 0.10; break;  // 10% tolerance
+            case 3: tolerance = 0.20; break;  // 20% tolerance
+            case 4: tolerance = 0.30; break;  // 30% tolerance
+            case 5: tolerance = 0.50; break;  // 50% tolerance (very loose)
+            default: tolerance = 0.20;
+        }
+
+        // Calculate match percentage
+        // If within tolerance: 100% match
+        // If deviation = 2x tolerance: 50% match
+        // If deviation >= 3x tolerance: 0% match
+        if (percentDeviation <= tolerance) {
+            // Perfect to good match: 100% to 80%
+            return 100.0 - (percentDeviation / tolerance) * 20.0;
+        } else if (percentDeviation <= tolerance * 2) {
+            // Acceptable match: 80% to 50%
+            double excessDeviation = (percentDeviation - tolerance) / tolerance;
+            return 80.0 - (excessDeviation * 30.0);
+        } else if (percentDeviation <= tolerance * 3) {
+            // Poor match: 50% to 0%
+            double excessDeviation = (percentDeviation - (tolerance * 2)) / tolerance;
+            return 50.0 - (excessDeviation * 50.0);
+        } else {
+            // Very poor match: 0%
+            return 0.0;
+        }
     }
 
     private int getCategoryIndex(String category) {
@@ -78,7 +125,7 @@ class ScoredAirplane extends Airplane {
     private double getActualValue(Spec spec) {
         switch (spec) {
             case SEATS: return this.getSeats();
-            case SPEED: return this.getCruiseSpeedMach();
+            case CABIN_COMPARTMENT: return this.getCabinCompartment();
             case BUDGET: return this.getPurchasePriceUSD();
             case OP_COST: return this.getHourlyOperatingCostUSD();
             default: return 0;
@@ -89,8 +136,23 @@ class ScoredAirplane extends Airplane {
         return score;
     }
 
+    public double getMatchPercentage() {
+        return matchPercentage;
+    }
+
+    public Map<Spec, Double> getIndividualMatches() {
+        return new EnumMap<>(individualMatches);
+    }
+
     @Override
     public String toString() {
-        return super.toString() + "Match Score: " + String.format("%.4f", score) + " (lower is better)\n";
+        StringBuilder sb = new StringBuilder(super.toString());
+        sb.append("Overall Match: ").append(String.format("%.2f%%", matchPercentage)).append("\n");
+        sb.append("Match Breakdown:\n");
+        for (Map.Entry<Spec, Double> entry : individualMatches.entrySet()) {
+            sb.append("  ").append(entry.getKey()).append(": ")
+                    .append(String.format("%.2f%%", entry.getValue())).append("\n");
+        }
+        return sb.toString();
     }
 }

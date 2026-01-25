@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
                                 t1.plane.getModel(),
                                 t1.plane.getSeats(),
                                 t1.plane.getSizeCategory(),
-                                t1.plane.getCruiseSpeedMach(),
+                                t1.plane.getCabinCompartment(),
                                 t1.plane.getPurchasePriceUSD(),
                                 t1.plane.getHourlyOperatingCostUSD()
                         ),
@@ -44,7 +44,7 @@ import java.util.NoSuchElementException;
                             t1.plane.getModel(),
                             t1.plane.getSeats(),
                             t1.plane.getSizeCategory(),
-                            t1.plane.getCruiseSpeedMach(),
+                            t1.plane.getCabinCompartment(),
                             t1.plane.getPurchasePriceUSD(),
                             t1.plane.getHourlyOperatingCostUSD()
                     ),
@@ -274,7 +274,7 @@ import java.util.NoSuchElementException;
 
             public PlaneNode(PlaneNode p) {
                 this(new Airplane(p.plane.getModel(), p.plane.getSeats(), p.plane.getSizeCategory(),
-                        p.plane.getCruiseSpeedMach(), p.plane.getPurchasePriceUSD(),
+                        p.plane.getCabinCompartment(), p.plane.getPurchasePriceUSD(),
                         p.plane.getHourlyOperatingCostUSD()), p.next);
             }
 

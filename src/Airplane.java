@@ -4,37 +4,60 @@ class Airplane implements Serializable {
     private String model;
     private int seats;
     private String sizeCategory; // NEW: "light_jet", "mid_sized_jet", etc.
-    private double cruiseSpeedMach;
+    private int cabinCompartment;
     private double purchasePriceUSD;
     private double hourlyOperatingCostUSD;
 
-    public Airplane(String model, int seats, String sizeCategory, double cruiseSpeedMach,
+    public Airplane(String model, int seats, String sizeCategory, int cabinCompartment,
                     double purchasePriceUSD, double hourlyOperatingCostUSD) {
-        this.model = model;
-        this.seats = seats;
-        this.sizeCategory = sizeCategory;
-        this.cruiseSpeedMach = cruiseSpeedMach;
-        this.purchasePriceUSD = purchasePriceUSD;
-        this.hourlyOperatingCostUSD = hourlyOperatingCostUSD;
+        setModel(model);
+        setSeats(seats);
+        setSizeCategory(sizeCategory);
+        setCabinCompartment(cabinCompartment);
+        setPurchasePriceUSD(purchasePriceUSD);
+        setHourlyOperatingCostUSD(hourlyOperatingCostUSD);
     }
 
     public String getModel() { return model; }
     public void setModel(String model) { this.model = model; }
 
     public int getSeats() { return seats; }
-    public void setSeats(int seats) { this.seats = seats; }
+    public void setSeats(int seats) {
+        if (seats <= 0) throw new IllegalArgumentException("Seats must be positive");
+
+        this.seats = seats; }
 
     public String getSizeCategory() { return sizeCategory; }
-    public void setSizeCategory(String sizeCategory) { this.sizeCategory = sizeCategory; }
+    public void setSizeCategory(String sizeCategory) {
+        if (sizeCategory == null || sizeCategory.trim().isEmpty()) {
+            throw new IllegalArgumentException("Size category cannot be null or empty");
+        }
+        String[] validCategories = {"light_jet", "mid_sized_jet", "super_mid_sized_jet", "large_cabin_jet"};
+        boolean valid = false;
+        for (String cat : validCategories) {
+            if (cat.equals(sizeCategory)) {
+                valid = true;
+                break;
+            }
+        }
+        if (!valid) throw new IllegalArgumentException("Invalid size category: " + sizeCategory);
+        this.sizeCategory = sizeCategory;
+    }
 
-    public double getCruiseSpeedMach() { return cruiseSpeedMach; }
-    public void setCruiseSpeedMach(double cruiseSpeedMach) { this.cruiseSpeedMach = cruiseSpeedMach; }
+    public int getCabinCompartment() { return cabinCompartment; }
+    public void setCabinCompartment(int cabinCompartment) {
+        if (cabinCompartment < 0) throw new IllegalArgumentException("Cabin compartment cannot be negative");
+        this.cabinCompartment = cabinCompartment; }
 
     public double getPurchasePriceUSD() { return purchasePriceUSD; }
-    public void setPurchasePriceUSD(double purchasePriceUSD) { this.purchasePriceUSD = purchasePriceUSD; }
+    public void setPurchasePriceUSD(double purchasePriceUSD) {
+        if (purchasePriceUSD < 0) throw new IllegalArgumentException("Price cannot be negative");
+        this.purchasePriceUSD = purchasePriceUSD;
+    }
 
     public double getHourlyOperatingCostUSD() { return hourlyOperatingCostUSD; }
     public void setHourlyOperatingCostUSD(double hourlyOperatingCostUSD) {
+        if (hourlyOperatingCostUSD < 0) throw new IllegalArgumentException("Operating cost cannot be negative");
         this.hourlyOperatingCostUSD = hourlyOperatingCostUSD;
     }
 
@@ -44,7 +67,7 @@ class Airplane implements Serializable {
                 + "Model: " + model + "\n"
                 + "Seats: " + seats + "\n"
                 + "Size Category: " + sizeCategory + "\n"
-                + "Cruise Speed (Mach): " + cruiseSpeedMach + "\n"
+                + "Cabin Compartments: " + cabinCompartment + "\n"
                 + "Purchase Price (USD): $" + String.format("%,.2f", purchasePriceUSD) + "\n"
                 + "Hourly Operating Cost (USD): $" + String.format("%,.2f", hourlyOperatingCostUSD) + "\n";
     }
@@ -57,7 +80,7 @@ class Airplane implements Serializable {
         Airplane other = (Airplane) obj;
         return this.seats == other.seats
                 && this.sizeCategory.equals(other.sizeCategory)
-                && this.cruiseSpeedMach == other.cruiseSpeedMach
+                && this.cabinCompartment == other.cabinCompartment
                 && this.purchasePriceUSD == other.purchasePriceUSD
                 && this.hourlyOperatingCostUSD == other.hourlyOperatingCostUSD
                 && this.model.equals(other.model);
