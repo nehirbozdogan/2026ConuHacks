@@ -10,7 +10,7 @@ class ScoredAirplane extends Airplane {
                 airplane.getHourlyOperatingCostUSD());
         this.score = calculateScore(profile);
     }
-
+//
     private double calculateScore(ClientProfile profile) {
         double totalScore = 0.0;
 
