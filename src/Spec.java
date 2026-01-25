@@ -1,7 +1,7 @@
 public enum Spec {
     BUDGET,
     SEATS,
-    RANGE,
+    SIZE_CATEGORY,
     SPEED,
     OP_COST
 }
